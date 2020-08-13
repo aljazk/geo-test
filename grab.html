@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<span>Path Id:</span>
+<input type="number" id="pathId"></input>
+
+<button onclick="getLocation()">Start</button>
+<button onclick="stop()">Stop</button>
+
+<p id="location"></p>
+
+<script>
+var id = null;
+var count = 0;
+var x = document.getElementById("location");
+var pathIdInput = document.getElementById("pathId");
+
+function getLocation()
+{
+  if (navigator.geolocation)
+  {
+    id = navigator.geolocation.watchPosition(getPosition);
+  }
+  else
+  { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+
+function stop() {
+	if (id) {
+		navigator.geolocation.clearWatch(id);
+		x.innerHTML="Stoped";
+	}
+}
+ 
+function getPosition(position) {
+	savePosition(position);
+	showPosition(position);
+}
+
+function savePosition(position)
+{
+	var x = position.coords.latitude;
+	var y = position.coords.longitude;
+	var z = position.coords.altitude;
+	if (!z)
+	{
+		z = 1;
+	}
+	fetch('http://localhost/insert.php?x='+x+'&y='+y+'&z='+z+'&path='+pathIdInput.value);
+}
+
+function showPosition(position) {
+	count++;
+    x.innerHTML="Latitude: " + position.coords.latitude + 
+    "<br>Longitude: " + position.coords.longitude + 
+    "<br>Altitude: " + position.coords.altitude+
+	"<br>Count: " + count;
+}
+</script>
+
+</body>
+</html>
